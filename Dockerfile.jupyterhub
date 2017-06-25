@@ -11,10 +11,13 @@ RUN /opt/conda/bin/pip install \
 RUN wget https://get.docker.com -q -O /tmp/getdocker && \
     chmod +x /tmp/getdocker && \
     sh /tmp/getdocker
+RUN mkdir -p /etc/docker && \
+    touch /etc/proxy_token
+COPY daemon.json /etc/docker/daemon.json
 
 # Copy TLS certificate and key
-ENV SSL_CERT /srv/jupyterhub/secrets/jupyterhub.crt
-ENV SSL_KEY /srv/jupyterhub/secrets/jupyterhub.key
+ENV SSL_CERT /srv/jupyterhub/secrets/
+ENV SSL_KEY /srv/jupyterhub/secrets/
 COPY ./secrets/*.crt $SSL_CERT
 COPY ./secrets/*.key $SSL_KEY
 RUN chmod 700 /srv/jupyterhub/secrets && \

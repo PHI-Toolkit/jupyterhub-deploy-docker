@@ -35,7 +35,14 @@ notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
 c.DockerSpawner.notebook_dir = notebook_dir
 # Mount the real user's Docker volume on the host to the notebook user's
 # notebook directory in the container
-c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+#c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+c.DockerSpawner.volumes = {
+    'jupyterhub-user-{username}': notebook_dir,
+    '/data/shared': '/home/jovyan/work/shared/',
+    '/data/geoserver/data/data': '/home/jovyan/work/geoserver',
+    '/data/modules': '/home/jovyan/work/modules'
+}
+
 c.DockerSpawner.extra_create_kwargs.update({ 'volume_driver': 'local' })
 # Remove containers once they are stopped
 c.DockerSpawner.remove_containers = True
@@ -47,9 +54,9 @@ c.JupyterHub.hub_ip = 'jupyterhub'
 c.JupyterHub.hub_port = 8080
 
 # TLS config
-c.JupyterHub.port = 443
-c.JupyterHub.ssl_key = os.environ['SSL_KEY']
-c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
+#c.JupyterHub.port = 443
+#c.JupyterHub.ssl_key = os.environ['SSL_KEY']
+#c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Authenticate users with GitHub OAuth
 c.JupyterHub.authenticator_class = 'oauthenticator.GitHubOAuthenticator'
@@ -60,6 +67,8 @@ data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
 c.JupyterHub.db_url = os.path.join('sqlite:///', data_dir, 'jupyterhub.sqlite')
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir,
     'jupyterhub_cookie_secret')
+
+c.JupyterHub.proxy_auth_token = open('/etc/proxy_token','r').read().replace('\n','')
 
 # Whitlelist users and admins
 c.Authenticator.whitelist = whitelist = set()

@@ -41,7 +41,9 @@ check-files: userlist $(cert_files)
 pull:
 	docker pull $(DOCKER_NOTEBOOK_IMAGE)
 
-notebook_image: pull
+#notebook_image: pull
+notebook_image:
+	$(DOCKER_EXEC) build -t $(DOCKER_NOTEBOOK_IMAGE) -f ${NOTEBOOK_IMAGE_DOCKERFILE} .
 
 build: check-files network volumes
 	docker-compose build
